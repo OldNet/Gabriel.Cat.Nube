@@ -34,6 +34,11 @@
     <Reference Include="Microsoft.CSharp">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -44,14 +49,20 @@
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Presentation" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DropBox\ApiException.cs" />
+    <Compile Include="DropBox.cs" />
     <Compile Include="DropBox\DropboxAppClient.cs" />
     <Compile Include="DropBox\DropboxCertHelper.cs" />
     <Compile Include="DropBox\DropboxClient.cs" />
@@ -1386,6 +1397,7 @@
     <Compile Include="DropBox\Generated\Users\Team.cs" />
     <Compile Include="DropBox\Generated\Users\TeamSpaceAllocation.cs" />
     <Compile Include="DropBox\Generated\Users\UsersUserRoutes.cs" />
+    <Compile Include="DropBox\LoginForm.xaml.cs" />
     <Compile Include="DropBox\Stone\Decoder.cs" />
     <Compile Include="DropBox\Stone\Empty.cs" />
     <Compile Include="DropBox\Stone\Encoder.cs" />
@@ -1398,30 +1410,21 @@
     <Compile Include="DropBox\Stone\JsonWriter.cs" />
     <Compile Include="DropBox\Stone\Util.cs" />
     <Compile Include="DropBox\StructuredException.cs" />
+    <Compile Include="IElementoNube.cs" />
+    <Compile Include="INube.cs" />
+    <Compile Include="Nube.cs" />
+    <Compile Include="NubeException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="DropBox" />
-    <Folder Include="DropBox\Generated" />
-    <Folder Include="DropBox\Generated\Async" />
-    <Folder Include="DropBox\Generated\Auth" />
-    <Folder Include="DropBox\Generated\Common" />
-    <Folder Include="DropBox\Generated\FileProperties" />
-    <Folder Include="DropBox\Generated\FileRequests" />
-    <Folder Include="DropBox\Generated\Files" />
-    <Folder Include="DropBox\Generated\Paper" />
-    <Folder Include="DropBox\Generated\Properties" />
-    <Folder Include="DropBox\Generated\Sharing" />
-    <Folder Include="DropBox\Generated\Team" />
-    <Folder Include="DropBox\Generated\TeamCommon" />
-    <Folder Include="DropBox\Generated\TeamLog" />
-    <Folder Include="DropBox\Generated\TeamPolicies" />
-    <Folder Include="DropBox\Generated\Users" />
-    <Folder Include="DropBox\Generated\UsersCommon" />
-    <Folder Include="DropBox\Stone" />
+    <Page Include="DropBox\LoginForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <None Include="DropBox\Generated\namespace_summaries.xml" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

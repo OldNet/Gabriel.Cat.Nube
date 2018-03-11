@@ -23,7 +23,7 @@ namespace Dropbox.Api.Files
     /// <seealso cref="RelocationResult" />
     /// <seealso cref="SaveCopyReferenceResult" />
     /// <seealso cref="SearchMatch" />
-    public class Metadata
+    public class Metadata:Gabriel.Cat.Nube.IElementoNube
     {
         #pragma warning disable 108
 
@@ -75,7 +75,7 @@ namespace Dropbox.Api.Files
 
             this.Name = name;
             this.PathLower = pathLower;
-            this.PathDisplay = pathDisplay;
+            this.PathSharing = pathDisplay;
             this.ParentSharedFolderId = parentSharedFolderId;
         }
 
@@ -99,6 +99,7 @@ namespace Dropbox.Api.Files
                 return this is FileMetadata;
             }
         }
+        public bool IsAFolder { get { return !IsFile; } }
 
         /// <summary>
         /// <para>Gets this instance as a <see cref="FileMetadata" />, or <c>null</c>.</para>
@@ -176,7 +177,7 @@ namespace Dropbox.Api.Files
         /// <see cref="Dropbox.Api.Files.Routes.FilesUserRoutes.ListFolderContinueAsync" />.
         /// This field will be null if the file or folder is not mounted.</para>
         /// </summary>
-        public string PathDisplay { get; protected set; }
+        public string PathSharing { get; protected set; }//mirar si es el path publico para descargarlo
 
         /// <summary>
         /// <para>Please use <see cref="Dropbox.Api.Files.FileSharingInfo.ParentSharedFolderId"
@@ -184,6 +185,8 @@ namespace Dropbox.Api.Files
         /// instead.</para>
         /// </summary>
         public string ParentSharedFolderId { get; protected set; }
+
+       
 
         #region Encoder class
 
@@ -222,9 +225,9 @@ namespace Dropbox.Api.Files
                 {
                     WriteProperty("path_lower", value.PathLower, writer, enc.StringEncoder.Instance);
                 }
-                if (value.PathDisplay != null)
+                if (value.PathSharing != null)
                 {
-                    WriteProperty("path_display", value.PathDisplay, writer, enc.StringEncoder.Instance);
+                    WriteProperty("path_display", value.PathSharing, writer, enc.StringEncoder.Instance);
                 }
                 if (value.ParentSharedFolderId != null)
                 {
@@ -289,7 +292,7 @@ namespace Dropbox.Api.Files
                         value.PathLower = enc.StringDecoder.Instance.Decode(reader);
                         break;
                     case "path_display":
-                        value.PathDisplay = enc.StringDecoder.Instance.Decode(reader);
+                        value.PathSharing = enc.StringDecoder.Instance.Decode(reader);
                         break;
                     case "parent_shared_folder_id":
                         value.ParentSharedFolderId = enc.StringDecoder.Instance.Decode(reader);

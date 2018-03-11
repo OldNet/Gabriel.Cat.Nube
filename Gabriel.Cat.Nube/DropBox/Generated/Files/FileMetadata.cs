@@ -237,9 +237,9 @@ namespace Dropbox.Api.Files
                 {
                     WriteProperty("path_lower", value.PathLower, writer, enc.StringEncoder.Instance);
                 }
-                if (value.PathDisplay != null)
+                if (value.PathSharing != null)
                 {
-                    WriteProperty("path_display", value.PathDisplay, writer, enc.StringEncoder.Instance);
+                    WriteProperty("path_display", value.PathSharing, writer, enc.StringEncoder.Instance);
                 }
                 if (value.ParentSharedFolderId != null)
                 {
@@ -319,7 +319,7 @@ namespace Dropbox.Api.Files
                         value.PathLower = enc.StringDecoder.Instance.Decode(reader);
                         break;
                     case "path_display":
-                        value.PathDisplay = enc.StringDecoder.Instance.Decode(reader);
+                        value.PathSharing = enc.StringDecoder.Instance.Decode(reader);
                         break;
                     case "parent_shared_folder_id":
                         value.ParentSharedFolderId = enc.StringDecoder.Instance.Decode(reader);

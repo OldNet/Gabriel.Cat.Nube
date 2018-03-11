@@ -29,16 +29,6 @@ namespace Dropbox.Api
         {
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:Dropbox.Api.DropboxClient"/> class.
-        /// </summary>
-        /// <param name="oauth2AccessToken">The oauth2 access token for making client requests.</param>
-        /// <param name="userAgent">The user agent to use when making requests.</param>
-        [Obsolete("This constructor is deprecated, please use DropboxClientConfig instead.")]
-        public DropboxClient(string oauth2AccessToken, string userAgent)
-            : this(oauth2AccessToken, new DropboxClientConfig(userAgent))
-        {
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Dropbox.Api.DropboxClient"/> class.
