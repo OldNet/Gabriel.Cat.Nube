@@ -94,12 +94,20 @@ namespace Gabriel.Cat.Nube
 
         public override bool DeleteFolder(string path, string nameFolder)
         {
-            throw new NotImplementedException();
+            bool deleted;
+            try
+            {
+                client.Files.DeleteAsync(System.IO.Path.Combine(path, nameFolder)).RunSynchronously();
+                deleted = true;
+            }
+            catch { deleted = false; }
+            return deleted;
         }
 
 
         public override bool ExistFolder(string path, string nameFolder)
         {
+            
             throw new NotImplementedException();
         }
 
