@@ -9,7 +9,7 @@ namespace Gabriel.Cat.Nube
 {
     interface INube
     {
-        Stream Download(string path, string fileName);
+        byte[] Download(string path, string fileName);
         void Upload(string path, string fileName, Stream strDatos);
         bool ExistFolder(string path, string nameFolder);
         bool CreateFolder(string path, string nameFolder);

@@ -1410,11 +1410,13 @@
     <Compile Include="DropBox\Stone\JsonWriter.cs" />
     <Compile Include="DropBox\Stone\Util.cs" />
     <Compile Include="DropBox\StructuredException.cs" />
+    <Compile Include="Extension.cs" />
     <Compile Include="IElementoNube.cs" />
     <Compile Include="INube.cs" />
     <Compile Include="Nube.cs" />
     <Compile Include="NubeException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="User.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="DropBox\LoginForm.xaml">

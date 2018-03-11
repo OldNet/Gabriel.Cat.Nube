@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Gabriel.Cat.Extension;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,8 +10,10 @@ namespace Gabriel.Cat.Nube
 {
     public abstract class Nube : INube
     {
+        
         public static bool ShowDebugrMessages = true;
-
+        public User User { get; protected set; }
+        public string AccessToken { get; protected set; }
         public abstract bool CreateFolder(string path, string nameFolder);
 
         public abstract bool DeleteFolder(string path, string nameFolder);
@@ -54,7 +57,7 @@ namespace Gabriel.Cat.Nube
                 Upload(pathFolder, files[i].Name, files[i].OpenRead());
         }
 
-        public abstract Stream Download(string path, string fileName);
+        public abstract byte[] Download(string path, string fileName);
         public abstract IList<IElementoNube> GetElements(string path,bool recursive);
         public  IList<IElementoNube> GetElements(string path)
         {

@@ -1,6 +1,7 @@
 ﻿using Dropbox;
 using Dropbox.Api;
 using Dropbox.Api.Files;
+using Gabriel.Cat.Extension;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,57 +16,42 @@ namespace Gabriel.Cat.Nube
     public class DropBox : Nube
     {
         Dropbox.Api.DropboxClient client;
-        public DropBox(string apiKey)
+        public DropBox(string loginAccessToken)
         {
             DropboxClientConfig config;
-            Application app;
-            LoginForm login;
             HttpClient httpClient;
-            try
+            Dropbox.Api.Users.FullAccount userDropoBox;
+       
+            httpClient = new HttpClient(new WebRequestHandler { ReadWriteTimeout = 10 * 1000 })
             {
-                app = new Application();
-                login = new LoginForm(apiKey);
-                app.Run(login);
-                if (login.Result)
-                {
-                    httpClient = new HttpClient(new WebRequestHandler { ReadWriteTimeout = 10 * 1000 })
-                    {
-                        // Specify request level timeout which decides maximum time that can be spent on
-                        // download/upload files.
-                        Timeout = TimeSpan.FromMinutes(20)
-                    };
+                // Specify request level timeout which decides maximum time that can be spent on
+                // download/upload files.
+                Timeout = TimeSpan.FromMinutes(20)
+            };
 
 
-                    config = new DropboxClientConfig()
-                    {
-                        HttpClient = httpClient
-                    };
-
-                    client = new Dropbox.Api.DropboxClient(login.AccessToken, config);
-
-
-                }
-                else
-                {
-                    throw new NubeException("No ha hecho login");
-                }
-            }
-            catch (Exception ex)
+            config = new DropboxClientConfig()
             {
-                throw new NubeException(ex.Message);
-            }
+                HttpClient = httpClient
+            };
+            AccessToken = loginAccessToken;
+            client = new Dropbox.Api.DropboxClient(AccessToken, config);
+            userDropoBox=  client.Users.GetCurrentAccountAsync().Result;
+       
+
+            User = new User(userDropoBox.Name.DisplayName, userDropoBox.Locale, userDropoBox.Email, userDropoBox.ProfilePhotoUrl, userDropoBox.EmailVerified);
         }
 
-        public DropboxClient Client { get {return client; } }
 
-        public override Stream Download(string path, string fileName)
+        public DropboxClient Client { get { return client; } }
+
+        public override byte[] Download(string path, string fileName)
         {
-            Task<Stream> taskStream;
-            Task<Dropbox.Api.Stone.IDownloadResponse<FileMetadata>> taskDownload= client.Files.DownloadAsync(System.IO.Path.Combine(path, fileName));
+            Task<byte[]> taskStream;
+            Task<Dropbox.Api.Stone.IDownloadResponse<FileMetadata>> taskDownload = client.Files.DownloadAsync(System.IO.Path.Combine(path, fileName).Replace('\\','/'));
 
-            taskDownload.RunSynchronously();
-            taskStream = taskDownload.Result.GetContentAsStreamAsync();
-            taskStream.RunSynchronously();
+            taskStream = taskDownload.Result.GetContentAsByteArrayAsync();
+         
 
             return taskStream.Result;
         }
@@ -75,15 +61,15 @@ namespace Gabriel.Cat.Nube
             if (ShowDebugrMessages || System.Diagnostics.Debugger.IsAttached)
                 Console.WriteLine("--- Creating Folder ---");
 
-            CreateFolderArg folderArg = new CreateFolderArg(path);
-            Task<CreateFolderResult> tskFolder =  client.Files.CreateFolderV2Async(folderArg);
+            CreateFolderArg folderArg = new CreateFolderArg(System.IO.Path.Combine(path,nameFolder).Replace('\\', '/'));
+            Task<CreateFolderResult> tskFolder = client.Files.CreateFolderV2Async(folderArg);
             CreateFolderResult folder;
             bool result;
             try
             {
-                tskFolder.RunSynchronously();
+             
                 folder = tskFolder.Result;
-               
+
                 if (ShowDebugrMessages || System.Diagnostics.Debugger.IsAttached)
                     Console.WriteLine("Folder: " + path + " created!");
                 result = true;
@@ -97,8 +83,7 @@ namespace Gabriel.Cat.Nube
             bool deleted;
             try
             {
-                client.Files.DeleteAsync(System.IO.Path.Combine(path, nameFolder)).RunSynchronously();
-                deleted = true;
+                deleted = client.Files.DeleteV2Async(System.IO.Path.Combine(path, nameFolder).Replace('\\','/')).Result.Metadata.IsDeleted;
             }
             catch { deleted = false; }
             return deleted;
@@ -107,8 +92,8 @@ namespace Gabriel.Cat.Nube
 
         public override bool ExistFolder(string path, string nameFolder)
         {
-            
-            throw new NotImplementedException();
+
+            return false;
         }
 
         public override void Upload(string path, string fileName, Stream strDatos)
@@ -123,11 +108,11 @@ namespace Gabriel.Cat.Nube
             UploadSessionCursor cursor;
             MemoryStream memStream;
             Task<UploadSessionStartResult> asyncTaskUploadResult;
-
+            FileMetadata file=null;
             byteRead = strDatos.Read(buffer, 0, chunkSize);
             memStream = new MemoryStream(buffer, 0, byteRead);
             asyncTaskUploadResult = client.Files.UploadSessionStartAsync(body: memStream);
-            asyncTaskUploadResult.RunSynchronously();
+
             result = asyncTaskUploadResult.Result;
             memStream.Close();
 
@@ -148,27 +133,63 @@ namespace Gabriel.Cat.Nube
 
                 if (idx == numChunks - 1)
                 {
-                    client.Files.UploadSessionFinishAsync(cursor, new CommitInfo(path + "/" + fileName), memStream).RunSynchronously();
+
+                  file=client.Files.UploadSessionFinishAsync(cursor, new CommitInfo(System.IO.Path.Combine(path, fileName)), memStream).Result;
                 }
 
                 else
                 {
-                    client.Files.UploadSessionAppendV2Async(cursor, body: memStream).RunSynchronously();
+                    client.Files.UploadSessionAppendV2Async(cursor, body: memStream).Wait();
                 }
                 memStream.Close();
 
             }
         }
 
-        public override IList<IElementoNube> GetElements(string path,bool recursive)
+        public override IList<IElementoNube> GetElements(string path, bool recursive)
         {
             ListFolderResult list;
-            Task<ListFolderResult> taskList =  client.Files.ListFolderAsync(path,recursive);
-            taskList.RunSynchronously();
+            Task<ListFolderResult> taskList = client.Files.ListFolderAsync(path, recursive);
             list = taskList.Result;
-            return list.Entries.Cast<IElementoNube>().ToArray(); 
+            return list.Entries.Cast<IElementoNube>().ToArray();
         }
 
-       
+        /// <summary>
+        /// Open a login form and return a User DropoBox account
+        /// </summary>
+        /// <param name="apiKey"> Add an ApiKey (from https://www.dropbox.com/developers/apps) here</param>
+        /// <returns>return null if user don't login successfully</returns>
+        public static DropBox Login(string apiKey)
+        {
+
+            Application app;
+            LoginForm login=null;
+            DropBox dropBoxAccount;
+            
+          
+            try
+            {
+                login = new LoginForm(apiKey);
+
+                app = new Application();
+                app.Run(login);
+            }
+            catch (InvalidOperationException ex)
+            {
+                login.ShowDialog();
+            }
+            catch { throw; }
+
+            if (login.Success)
+            {
+                dropBoxAccount = new DropBox(login.AccessToken);
+            }
+            else
+            {
+                dropBoxAccount = null;
+            }
+
+            return dropBoxAccount;
+        }
     }
 }
