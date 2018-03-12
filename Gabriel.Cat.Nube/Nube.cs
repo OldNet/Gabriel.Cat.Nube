@@ -8,9 +8,13 @@ using System.Threading.Tasks;
 
 namespace Gabriel.Cat.Nube
 {
+    public enum SharingLevel
+    {
+        Owner, Editor, Viewer, ViewerNoComment, Other
+    }
     public abstract class Nube : INube
     {
-        
+      
         public static bool ShowDebugrMessages = true;
         public User User { get; protected set; }
         public string AccessToken { get; protected set; }
@@ -63,5 +67,12 @@ namespace Gabriel.Cat.Nube
         {
             return GetElements(path, false);
         }
-    }
+
+        public abstract string GetTemporalPath(IElementoNube elemento);
+        public abstract string GetIdShareFolder(IElementoNube elemento);
+        public abstract bool[] Share(IElementoNube elemento, bool notify = true, string message = null, SharingLevel level = SharingLevel.ViewerNoComment, params string[] emailsUsersToShare);
+     
+
+
+            }
 }

@@ -10,6 +10,6 @@ namespace Gabriel.Cat.Nube
     {
         bool IsAFolder { get; }
         string Name { get; }
-        string PathSharing { get; }
+        string PathNube { get; }
     }
 }
